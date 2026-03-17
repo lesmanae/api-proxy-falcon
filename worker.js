@@ -6,7 +6,57 @@ export default {
     const path = url.pathname
 
     // ======================
-    // 🔹 RAW PROXY (ALL API)
+    // 🔹 UI EXPLORER
+    // ======================
+    if (path === "/explorer") {
+      return new Response(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>API Explorer 🚀</title>
+  <style>
+    body { font-family: sans-serif; background:#0f172a; color:white; padding:20px }
+    button { padding:10px; margin:5px; border:none; border-radius:8px; cursor:pointer }
+    pre { background:#020617; padding:10px; overflow:auto; border-radius:10px }
+  </style>
+</head>
+<body>
+
+<h2>🚀 API Explorer Falcon</h2>
+
+<button onclick="call('/api/home')">Home</button>
+<button onclick="call('/api/search?q=cinta')">Search</button>
+
+<button onclick="call('/raw/melolo/home')">RAW Home</button>
+<button onclick="call('/raw/melolo/search?q=cinta')">RAW Search</button>
+
+<input id="custom" placeholder="/raw/melolo/detail?id=..." style="width:300px"/>
+<button onclick="customCall()">Custom</button>
+
+<pre id="output">Klik tombol untuk test API...</pre>
+
+<script>
+async function call(url){
+  const res = await fetch(url)
+  const text = await res.text()
+  document.getElementById("output").textContent = text
+}
+
+function customCall(){
+  const val = document.getElementById("custom").value
+  call(val)
+}
+</script>
+
+</body>
+</html>
+`, {
+        headers: { "content-type": "text/html" }
+      })
+    }
+
+    // ======================
+    // 🔹 RAW PROXY
     // ======================
     if (path.startsWith("/raw/")) {
       const target = BASE + path.replace("/raw", "") + url.search
@@ -14,7 +64,7 @@ export default {
     }
 
     // ======================
-    // 🔹 HOME API (FIX)
+    // 🔹 HOME API
     // ======================
     if (path === "/api/home") {
       const res = await fetch(BASE + "/melolo/home")
@@ -25,16 +75,14 @@ export default {
       const result = books.map(item => ({
         id: item.drama_id,
         title: item.drama_name,
-        thumbnail: item.thumb_url,
-        views: item.watch_value,
-        episode: item.episode_count
+        thumbnail: item.thumb_url
       }))
 
       return Response.json(result)
     }
 
     // ======================
-    // 🔹 SEARCH API (FIX)
+    // 🔹 SEARCH API
     // ======================
     if (path === "/api/search") {
       const q = url.searchParams.get("q") || ""
@@ -53,60 +101,6 @@ export default {
       return Response.json(result)
     }
 
-    // ======================
-    // 🔹 DETAIL API
-    // ======================
-    if (path === "/api/detail") {
-      const id = url.searchParams.get("id")
-
-      const res = await fetch(BASE + `/melolo/detail?id=${id}`)
-      const json = await res.json()
-
-      const d = json?.data || {}
-
-      return Response.json({
-        title: d.drama_name,
-        description: d.description,
-        thumbnail: d.thumb_url,
-        episodes: d.episodes || []
-      })
-    }
-
-    // ======================
-    // 🔹 PLAYER API
-    // ======================
-    if (path === "/api/player") {
-      const id = url.searchParams.get("id")
-
-      const res = await fetch(BASE + `/melolo/player?id=${id}`)
-      const json = await res.json()
-
-      return Response.json({
-        video: json?.data?.url || null
-      })
-    }
-
-    // ======================
-    // 🔹 DEFAULT PAGE
-    // ======================
-    return new Response(
-      JSON.stringify({
-        status: "OK",
-        message: "API Proxy Falcon 🚀",
-        endpoints: [
-          "/api/home",
-          "/api/search?q=keyword",
-          "/api/detail?id=xxx",
-          "/api/player?id=xxx",
-          "/raw/*"
-        ]
-      }, null, 2),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      }
-    )
+    return new Response("OK")
   }
 }
