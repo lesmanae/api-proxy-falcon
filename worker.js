@@ -160,7 +160,7 @@ function getHTML() {
     '<div class="wrap" id="app"></div>',
     '<footer>&#x26A1; Sonzai X API Explorer &middot; Powered by Cloudflare Workers</footer>',
     '<script>',
-    '(function(){',
+    // FUNGSI (function(){ ... }) DIHAPUS AGAR FUNGSI BISA DIPANGGIL SECARA GLOBAL OLEH HTML
     'var BASE=location.origin;',
     'var xAll=false, curCat="all";',
     // ── PROVIDERS DATA ────────────────────────────────────────────────────
@@ -383,7 +383,6 @@ function getHTML() {
     'function renderField(p,ep,f){',
     '  var key=p.id+"_"+ep.id;',
     '  var inputId="f_"+p.id+"_"+ep.id+"_"+f.n;',
-    // DI SINI FIX: Menggunakan tanda kutip tunggal (' \ ) untuk parameter JS agar tidak konflik dengan ( " ) di atribut class/oninput HTML
     '  var onip="refreshUrl(\\\'"+p.id+"\\\',\\\'"+ep.id+"\\\')";',
     '  return \'<div class="prow"><div class="piw">\'',
     '    +\'<span class="pn">\'+f.l+"</span>"',
@@ -396,7 +395,7 @@ function getHTML() {
     'function renderEp(p,ep){',
     '  var k=p.id+"_"+ep.id;',
     '  var pd=ep.pp?ep.path+"/{id}":ep.path;',
-    '  var sbColor=\'style="background:\'+p.cl+\'";\';',
+    '  var sbColor=\'style="background:\'+p.cl+\'"\';',
     '  var h=\'<div class="ep">\'',
     '    +\'<div class="eph"><span class="mth">GET</span><span class="epath">\'+pd+\'</span><span class="ename">\'+ep.ds+"</span></div>"',
     '    +\'<div class="epparams"><div class="plbl">Parameters</div>\'',
@@ -405,7 +404,6 @@ function getHTML() {
     '    +"</div>"',
     '    +\'<div class="epurl"><div class="ulbl">Request URL</div>\'',
     '    +\'<div class="uprev"><div class="utext" id="uprev_\'+k+\'"><span class="b">\'+BASE+\'</span><span class="p">\'+ep.path+"</span></div>"',
-    // DI SINI FIX: Semua onclick menggunakan kutip tunggal (\')
     '    +\'<button class="cpurl" id="cu_\'+k+\'" onclick="doCopyUrl(\\\'\' +p.id+\'\\\',\\\'\' +ep.id+\'\\\')">Copy URL</button></div></div>\'',
     '    +\'<div class="epsend"><button class="sendbtn" id="sb_\'+k+\'" \'+sbColor+\' onclick="doSend(\\\'\' +p.id+\'\\\',\\\'\' +ep.id+\'\\\')">\'',
     '    +\'<div class="spin"></div><span class="slbl">Send Request \u26A1</span></button></div>\'',
@@ -422,7 +420,6 @@ function getHTML() {
     '  var epHTML=p.ep.map(function(ep){return renderEp(p,ep);}).join("");',
     '  var basePath=BASE+p.ep[0].path.split("/").slice(0,2).join("/")+"/...";',
     '  return \'<div class="pcard" data-ct="\'+p.ct+\'">\'',
-    // DI SINI FIX: onclick menggunakan kutip tunggal (\')
     '    +\'<div class="ph" onclick="togProv(\\\'\' +p.id+\'\\\')">\'',
     '    +\'<div class="phl"><div>\'',
     '    +\'<div class="pname" style="color:\'+p.cl+\'">\'+p.nm+"</div>"',
@@ -489,7 +486,7 @@ function getHTML() {
 
     'build();',
     'loadStats();',
-    '})();',
+    // FUNGSI PENUTUP })(); DIHAPUS DI SINI
     '</script>',
     '</body>',
     '</html>',
@@ -559,3 +556,4 @@ export default {
     }
   },
 };
+
