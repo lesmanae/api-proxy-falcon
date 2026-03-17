@@ -14,26 +14,27 @@ export default {
     }
 
     // ======================
-    // 🔹 HOME API
+    // 🔹 HOME API (FIX)
     // ======================
     if (path === "/api/home") {
       const res = await fetch(BASE + "/melolo/home")
       const json = await res.json()
 
-      const data = json?.data || []
+      const books = json?.data?.[0]?.books || []
 
-      const result = data.map(item => ({
-        id: item.id,
-        title: item.title,
-        thumbnail: item.cover,
-        views: item.views
+      const result = books.map(item => ({
+        id: item.drama_id,
+        title: item.drama_name,
+        thumbnail: item.thumb_url,
+        views: item.watch_value,
+        episode: item.episode_count
       }))
 
       return Response.json(result)
     }
 
     // ======================
-    // 🔹 SEARCH API
+    // 🔹 SEARCH API (FIX)
     // ======================
     if (path === "/api/search") {
       const q = url.searchParams.get("q") || ""
@@ -41,11 +42,13 @@ export default {
       const res = await fetch(BASE + "/melolo/search?q=" + q)
       const json = await res.json()
 
-      const result = json?.data?.map(item => ({
-        id: item.id,
-        title: item.title,
-        thumbnail: item.cover
-      })) || []
+      const books = json?.data?.[0]?.books || []
+
+      const result = books.map(item => ({
+        id: item.drama_id,
+        title: item.drama_name,
+        thumbnail: item.thumb_url
+      }))
 
       return Response.json(result)
     }
@@ -56,15 +59,15 @@ export default {
     if (path === "/api/detail") {
       const id = url.searchParams.get("id")
 
-      const res = await fetch(BASE + "/melolo/detail?id=" + id)
+      const res = await fetch(BASE + `/melolo/detail?id=${id}`)
       const json = await res.json()
 
       const d = json?.data || {}
 
       return Response.json({
-        title: d.title,
+        title: d.drama_name,
         description: d.description,
-        thumbnail: d.cover,
+        thumbnail: d.thumb_url,
         episodes: d.episodes || []
       })
     }
@@ -75,7 +78,7 @@ export default {
     if (path === "/api/player") {
       const id = url.searchParams.get("id")
 
-      const res = await fetch(BASE + "/melolo/player?id=" + id)
+      const res = await fetch(BASE + `/melolo/player?id=${id}`)
       const json = await res.json()
 
       return Response.json({
@@ -84,10 +87,26 @@ export default {
     }
 
     // ======================
-    // 🔹 DEFAULT
+    // 🔹 DEFAULT PAGE
     // ======================
-    return new Response("API Proxy Running 🚀", {
-      headers: { "content-type": "text/plain" }
-    })
+    return new Response(
+      JSON.stringify({
+        status: "OK",
+        message: "API Proxy Falcon 🚀",
+        endpoints: [
+          "/api/home",
+          "/api/search?q=keyword",
+          "/api/detail?id=xxx",
+          "/api/player?id=xxx",
+          "/raw/*"
+        ]
+      }, null, 2),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        }
+      }
+    )
   }
 }
