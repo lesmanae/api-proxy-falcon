@@ -3,7 +3,7 @@
  * Deploy: https://api-proxy-falcon.fajarlsmn2k21.workers.dev/
  * - GET /       → HTML API Explorer
  * - GET /health → Status JSON
- * - GET /*      → Proxy ke api.sonzaix.indevs.in
+ * - GET /* → Proxy ke api.sonzaix.indevs.in
  */
 
 const TARGET_BASE = "https://api.sonzaix.indevs.in";
@@ -383,7 +383,8 @@ function getHTML() {
     'function renderField(p,ep,f){',
     '  var key=p.id+"_"+ep.id;',
     '  var inputId="f_"+p.id+"_"+ep.id+"_"+f.n;',
-    '  var onip="refreshUrl(\\""+p.id+"\\",\\""+ep.id+"\\")";',
+    // DI SINI FIX: Menggunakan tanda kutip tunggal (' \ ) untuk parameter JS agar tidak konflik dengan ( " ) di atribut class/oninput HTML
+    '  var onip="refreshUrl(\\\'"+p.id+"\\\',\\\'"+ep.id+"\\\')";',
     '  return \'<div class="prow"><div class="piw">\'',
     '    +\'<span class="pn">\'+f.l+"</span>"',
     '    +(f.r?\'<span class="req">REQ</span>\':\'<span class="opt">OPT</span>\')',
@@ -395,7 +396,7 @@ function getHTML() {
     'function renderEp(p,ep){',
     '  var k=p.id+"_"+ep.id;',
     '  var pd=ep.pp?ep.path+"/{id}":ep.path;',
-    '  var sbColor=\'style="background:\'+p.cl+\'"\'',
+    '  var sbColor=\'style="background:\'+p.cl+\'";\';',
     '  var h=\'<div class="ep">\'',
     '    +\'<div class="eph"><span class="mth">GET</span><span class="epath">\'+pd+\'</span><span class="ename">\'+ep.ds+"</span></div>"',
     '    +\'<div class="epparams"><div class="plbl">Parameters</div>\'',
@@ -404,13 +405,14 @@ function getHTML() {
     '    +"</div>"',
     '    +\'<div class="epurl"><div class="ulbl">Request URL</div>\'',
     '    +\'<div class="uprev"><div class="utext" id="uprev_\'+k+\'"><span class="b">\'+BASE+\'</span><span class="p">\'+ep.path+"</span></div>"',
-    '    +\'<button class="cpurl" id="cu_\'+k+\'" onclick="doCopyUrl(\\"\'  +p.id+\'\\",\\"\'+ep.id+\'\\")">Copy URL</button></div></div>\'',
-    '    +\'<div class="epsend"><button class="sendbtn" id="sb_\'+k+\'" \'+sbColor+\' onclick="doSend(\\"\'  +p.id+\'\\",\\"\'+ep.id+\'\\")">\'',
+    // DI SINI FIX: Semua onclick menggunakan kutip tunggal (\')
+    '    +\'<button class="cpurl" id="cu_\'+k+\'" onclick="doCopyUrl(\\\'\' +p.id+\'\\\',\\\'\' +ep.id+\'\\\')">Copy URL</button></div></div>\'',
+    '    +\'<div class="epsend"><button class="sendbtn" id="sb_\'+k+\'" \'+sbColor+\' onclick="doSend(\\\'\' +p.id+\'\\\',\\\'\' +ep.id+\'\\\')">\'',
     '    +\'<div class="spin"></div><span class="slbl">Send Request \u26A1</span></button></div>\'',
     '    +\'<div class="epresp" id="rb_\'+k+\'">\'',
     '    +\'<div class="rbar"><span class="rstat" id="rs_\'+k+\'">READY</span>\'',
     '    +\'<span class="rtime" id="rt_\'+k+\'"></span>\'',
-    '    +\'<button class="cpres" id="cr_\'+k+\'" onclick="doCopyRes(\\"\'  +p.id+\'\\",\\"\'+ep.id+\'\\")">Copy</button></div>\'',
+    '    +\'<button class="cpres" id="cr_\'+k+\'" onclick="doCopyRes(\\\'\' +p.id+\'\\\',\\\'\' +ep.id+\'\\\')">Copy</button></div>\'',
     '    +\'<div class="rbody"><pre id="rp_\'+k+\'" class="wn">// Klik Send Request untuk mengirim...</pre></div>\'',
     '    +"</div></div>";',
     '  return h;',
@@ -420,7 +422,8 @@ function getHTML() {
     '  var epHTML=p.ep.map(function(ep){return renderEp(p,ep);}).join("");',
     '  var basePath=BASE+p.ep[0].path.split("/").slice(0,2).join("/")+"/...";',
     '  return \'<div class="pcard" data-ct="\'+p.ct+\'">\'',
-    '    +\'<div class="ph" onclick="togProv(\\"\'  +p.id+\'\\")">\'',
+    // DI SINI FIX: onclick menggunakan kutip tunggal (\')
+    '    +\'<div class="ph" onclick="togProv(\\\'\' +p.id+\'\\\')">\'',
     '    +\'<div class="phl"><div>\'',
     '    +\'<div class="pname" style="color:\'+p.cl+\'">\'+p.nm+"</div>"',
     '    +\'<div class="bpath">\'+basePath+"</div>"',
