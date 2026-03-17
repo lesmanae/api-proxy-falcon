@@ -5,96 +5,35 @@ export default {
     const url = new URL(request.url)
     const path = url.pathname
 
-    // ======================
-    // 🔥 PRO EXPLORER UI
-    // ======================
     if (path === "/explorer") {
       return new Response(`<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Falcon Explorer PRO</title>
+<title>Falcon Auto Player</title>
 
 <style>
-body {
-  background:#0f172a;
-  color:white;
-  font-family:sans-serif;
-  padding:20px;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:15px;
-}
-
-.card {
-  background:#020617;
-  border-radius:12px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.card:hover { transform:scale(1.05); }
-
-.card img {
-  width:100%;
-  height:200px;
-  object-fit:cover;
-}
-
-.card p {
-  padding:10px;
-  font-size:14px;
-}
-
-video {
-  width:100%;
-  margin-top:20px;
-  border-radius:10px;
-}
-
-input,button {
-  padding:10px;
-  border-radius:8px;
-  border:none;
-  margin:5px;
-}
-
-pre {
-  background:#020617;
-  padding:10px;
-  border-radius:10px;
-  overflow:auto;
-}
+body { background:#0f172a;color:white;font-family:sans-serif;padding:20px }
+.grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px }
+.card { background:#020617;border-radius:12px;overflow:hidden;cursor:pointer }
+.card img { width:100%;height:200px;object-fit:cover }
+.card p { padding:10px;font-size:14px }
+video { width:100%;margin-top:20px }
 </style>
 </head>
 
 <body>
 
-<h2>🚀 Falcon Explorer PRO</h2>
+<h2>🔥 Falcon Auto Player</h2>
 
-<!-- PROVIDER -->
 <button onclick="setProvider('melolo')">Melolo</button>
 <button onclick="setProvider('dramawave')">Dramawave</button>
 <button onclick="setProvider('goodshort')">GoodShort</button>
 
-<br><br>
-
-<input id="id" placeholder="Manual ID (opsional)">
-<button onclick="manualDetail()">Detail</button>
-<button onclick="manualPlayer()">Play</button>
-
-<h3>📺 List</h3>
 <div id="list" class="grid"></div>
 
-<h3>🎬 Player</h3>
 <video id="player" controls></video>
-
-<h3>📄 JSON</h3>
-<pre id="json">Loading...</pre>
+<pre id="json"></pre>
 
 <script>
 let provider = "melolo"
@@ -121,67 +60,48 @@ async function loadHome(){
       <p>\${item.drama_name}</p>
     \`
 
-    div.onclick = () => selectItem(item.drama_id)
+    div.onclick = () => autoPlay(item.drama_id)
 
     list.appendChild(div)
   })
-
-  document.getElementById("json").textContent =
-    JSON.stringify(json, null, 2)
 }
 
-async function selectItem(id){
-  document.getElementById("id").value = id
-
-  // DETAIL
+async function autoPlay(id){
+  // 1. ambil detail
   const d = await fetch("/raw/" + provider + "/detail?id=" + id)
   const dj = await d.json()
 
   document.getElementById("json").textContent =
     JSON.stringify(dj, null, 2)
 
-  // PLAYER
-  try {
-    const p = await fetch("/raw/" + provider + "/player?id=" + id)
-    const pj = await p.json()
+  // 2. cari episode
+  let ep = null
 
-    const video =
-      pj?.data?.url ||
-      pj?.data?.video_url ||
-      pj?.url
-
-    if(video){
-      document.getElementById("player").src = video
-    }
-  } catch(e){
-    console.log("player error")
+  if(dj?.data?.episodes){
+    ep = dj.data.episodes[0]?.id
   }
-}
 
-async function manualDetail(){
-  const id = document.getElementById("id").value
-  const res = await fetch("/raw/" + provider + "/detail?id=" + id)
-  const json = await res.json()
-  document.getElementById("json").textContent =
-    JSON.stringify(json, null, 2)
-}
+  if(!ep && dj?.data?.episode_list){
+    ep = dj.data.episode_list[0]?.episode_id
+  }
 
-async function manualPlayer(){
-  const id = document.getElementById("id").value
-  const res = await fetch("/raw/" + provider + "/player?id=" + id)
-  const json = await res.json()
+  if(!ep){
+    console.log("episode tidak ditemukan")
+    return
+  }
+
+  // 3. play
+  const p = await fetch("/raw/" + provider + "/player?id=" + ep)
+  const pj = await p.json()
 
   const video =
-    json?.data?.url ||
-    json?.data?.video_url ||
-    json?.url
+    pj?.data?.url ||
+    pj?.data?.video_url ||
+    pj?.url
 
   if(video){
     document.getElementById("player").src = video
   }
-
-  document.getElementById("json").textContent =
-    JSON.stringify(json, null, 2)
 }
 
 loadHome()
@@ -193,9 +113,6 @@ loadHome()
       })
     }
 
-    // ======================
-    // 🔹 RAW PROXY
-    // ======================
     if (path.startsWith("/raw/")) {
       const target = BASE + path.replace("/raw", "") + url.search
       return fetch(target)
