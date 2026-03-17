@@ -6,173 +6,201 @@ export default {
     const path = url.pathname
 
     // ======================
-    // 🔹 UI EXPLORER (FULL)
+    // 🔥 PRO EXPLORER UI
     // ======================
     if (path === "/explorer") {
-      return new Response(`
-<!DOCTYPE html>
+      return new Response(`<!DOCTYPE html>
 <html>
 <head>
-  <title>API Explorer 🚀</title>
-  <style>
-    body { font-family: sans-serif; background:#0f172a; color:white; padding:20px }
-    button { padding:10px; margin:5px; border:none; border-radius:8px; cursor:pointer }
-    pre { background:#020617; padding:10px; overflow:auto; border-radius:10px }
-    input { padding:10px; border-radius:8px; border:none }
-  </style>
+<meta charset="UTF-8">
+<title>Falcon Explorer PRO</title>
+
+<style>
+body {
+  background:#0f172a;
+  color:white;
+  font-family:sans-serif;
+  padding:20px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:15px;
+}
+
+.card {
+  background:#020617;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:hover { transform:scale(1.05); }
+
+.card img {
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+
+.card p {
+  padding:10px;
+  font-size:14px;
+}
+
+video {
+  width:100%;
+  margin-top:20px;
+  border-radius:10px;
+}
+
+input,button {
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin:5px;
+}
+
+pre {
+  background:#020617;
+  padding:10px;
+  border-radius:10px;
+  overflow:auto;
+}
+</style>
 </head>
+
 <body>
 
-<h2>🚀 API Explorer Falcon</h2>
+<h2>🚀 Falcon Explorer PRO</h2>
 
-<h3>📦 Provider</h3>
+<!-- PROVIDER -->
 <button onclick="setProvider('melolo')">Melolo</button>
 <button onclick="setProvider('dramawave')">Dramawave</button>
 <button onclick="setProvider('goodshort')">GoodShort</button>
 
-<h3>⚙️ Endpoint</h3>
-<button onclick="call('home')">Home</button>
-<button onclick="call('search?q=cinta')">Search</button>
-<button onclick="call('detail?id=7452742487271017488')">Detail</button>
-<button onclick="call('player?id=7452742487271017488')">Player</button>
+<br><br>
 
-<h3>🧪 Custom</h3>
-<input id="custom" placeholder="detail?id=..." />
-<button onclick="customCall()">Run</button>
+<input id="id" placeholder="Manual ID (opsional)">
+<button onclick="manualDetail()">Detail</button>
+<button onclick="manualPlayer()">Play</button>
 
-<pre id="output">Klik tombol untuk test API...</pre>
+<h3>📺 List</h3>
+<div id="list" class="grid"></div>
+
+<h3>🎬 Player</h3>
+<video id="player" controls></video>
+
+<h3>📄 JSON</h3>
+<pre id="json">Loading...</pre>
 
 <script>
 let provider = "melolo"
 
 function setProvider(p){
   provider = p
-  document.getElementById("output").textContent = "Provider: " + p
+  loadHome()
 }
 
-async function call(endpoint){
-  const url = "/raw/" + provider + "/" + endpoint
-  const res = await fetch(url)
-  const text = await res.text()
-  document.getElementById("output").textContent = text
+async function loadHome(){
+  const res = await fetch("/raw/" + provider + "/home")
+  const json = await res.json()
+
+  const books = json?.data?.[0]?.books || []
+  const list = document.getElementById("list")
+  list.innerHTML = ""
+
+  books.forEach(item => {
+    const div = document.createElement("div")
+    div.className = "card"
+
+    div.innerHTML = \`
+      <img src="\${item.thumb_url}">
+      <p>\${item.drama_name}</p>
+    \`
+
+    div.onclick = () => selectItem(item.drama_id)
+
+    list.appendChild(div)
+  })
+
+  document.getElementById("json").textContent =
+    JSON.stringify(json, null, 2)
 }
 
-function customCall(){
-  const val = document.getElementById("custom").value
-  call(val)
+async function selectItem(id){
+  document.getElementById("id").value = id
+
+  // DETAIL
+  const d = await fetch("/raw/" + provider + "/detail?id=" + id)
+  const dj = await d.json()
+
+  document.getElementById("json").textContent =
+    JSON.stringify(dj, null, 2)
+
+  // PLAYER
+  try {
+    const p = await fetch("/raw/" + provider + "/player?id=" + id)
+    const pj = await p.json()
+
+    const video =
+      pj?.data?.url ||
+      pj?.data?.video_url ||
+      pj?.url
+
+    if(video){
+      document.getElementById("player").src = video
+    }
+  } catch(e){
+    console.log("player error")
+  }
 }
+
+async function manualDetail(){
+  const id = document.getElementById("id").value
+  const res = await fetch("/raw/" + provider + "/detail?id=" + id)
+  const json = await res.json()
+  document.getElementById("json").textContent =
+    JSON.stringify(json, null, 2)
+}
+
+async function manualPlayer(){
+  const id = document.getElementById("id").value
+  const res = await fetch("/raw/" + provider + "/player?id=" + id)
+  const json = await res.json()
+
+  const video =
+    json?.data?.url ||
+    json?.data?.video_url ||
+    json?.url
+
+  if(video){
+    document.getElementById("player").src = video
+  }
+
+  document.getElementById("json").textContent =
+    JSON.stringify(json, null, 2)
+}
+
+loadHome()
 </script>
 
 </body>
-</html>
-`, {
-        headers: { "content-type": "text/html" }
+</html>`, {
+        headers: { "content-type": "text/html; charset=UTF-8" }
       })
     }
 
     // ======================
-    // 🔹 RAW PROXY (ALL API)
+    // 🔹 RAW PROXY
     // ======================
     if (path.startsWith("/raw/")) {
       const target = BASE + path.replace("/raw", "") + url.search
       return fetch(target)
     }
 
-    // ======================
-    // 🔹 HOME API (FIX)
-    // ======================
-    if (path === "/api/home") {
-      const res = await fetch(BASE + "/melolo/home")
-      const json = await res.json()
-
-      const books = json?.data?.[0]?.books || []
-
-      const result = books.map(item => ({
-        id: item.drama_id,
-        title: item.drama_name,
-        thumbnail: item.thumb_url,
-        views: item.watch_value,
-        episode: item.episode_count
-      }))
-
-      return Response.json(result)
-    }
-
-    // ======================
-    // 🔹 SEARCH API (FIX)
-    // ======================
-    if (path === "/api/search") {
-      const q = url.searchParams.get("q") || ""
-
-      const res = await fetch(BASE + "/melolo/search?q=" + q)
-      const json = await res.json()
-
-      const books = json?.data?.[0]?.books || []
-
-      const result = books.map(item => ({
-        id: item.drama_id,
-        title: item.drama_name,
-        thumbnail: item.thumb_url
-      }))
-
-      return Response.json(result)
-    }
-
-    // ======================
-    // 🔹 DETAIL API
-    // ======================
-    if (path === "/api/detail") {
-      const id = url.searchParams.get("id")
-
-      const res = await fetch(BASE + "/melolo/detail?id=" + id)
-      const json = await res.json()
-
-      const d = json?.data || {}
-
-      return Response.json({
-        title: d.drama_name,
-        description: d.description,
-        thumbnail: d.thumb_url,
-        episodes: d.episodes || []
-      })
-    }
-
-    // ======================
-    // 🔹 PLAYER API
-    // ======================
-    if (path === "/api/player") {
-      const id = url.searchParams.get("id")
-
-      const res = await fetch(BASE + "/melolo/player?id=" + id)
-      const json = await res.json()
-
-      return Response.json({
-        video: json?.data?.url || null
-      })
-    }
-
-    // ======================
-    // 🔹 DEFAULT
-    // ======================
-    return new Response(
-      JSON.stringify({
-        status: "OK",
-        message: "API Proxy Falcon 🚀",
-        endpoints: [
-          "/explorer",
-          "/api/home",
-          "/api/search?q=keyword",
-          "/api/detail?id=xxx",
-          "/api/player?id=xxx",
-          "/raw/*"
-        ]
-      }, null, 2),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      }
-    )
+    return new Response("OK")
   }
 }
