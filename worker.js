@@ -245,6 +245,7 @@ function getHTML() {
     ']},',
     // MissAV
     '{id:"missav",nm:"MissAV API",cl:"#f43f5e",bd:"VIDEO",ct:"mv",ep:[',
+    '  {id:"search",path:"/missav/api/v1/search",ds:"Search Video",f:[{n:"query",l:"query",r:1,v:"korea"},{n:"page",l:"page",t:"number",v:"1"}]},',
     '  {id:"detail",path:"/missav/api/v1/detail",ds:"Get Detail",f:[{n:"url",l:"url",r:1,v:""}]}',
     ']},',
     // Tools
