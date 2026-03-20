@@ -3,7 +3,7 @@
  * Deploy: https://api-proxy-falcon.fajarlsmn2k21.workers.dev/
  * - GET /       → HTML API Explorer
  * - GET /health → Status JSON
- * - GET /* → Proxy ke api.sonzaix.indevs.in
+ * - GET /* → Proxy ke api.sonzaix.indevs.in atau custom render
  */
 
 const TARGET_BASE = "https://api.sonzaix.indevs.in";
@@ -20,6 +20,7 @@ const ALLOWED = [
   "/reelshort","/freereels","/netshort","/dramabox",
   "/drama","/sosmed","/terabox","/youtube",
   "/anime","/samehada","/shinigami","/stats",
+  "/missav",
 ];
 
 const rateMap = new Map();
@@ -146,8 +147,8 @@ function getHTML() {
     '  <div class="proxy-badge"><span class="dot"></span>Proxy via Cloudflare Workers</div>',
     '</header>',
     '<div class="sbar">',
-    '  <div class="stat"><div class="sn">13</div><div class="sl">Providers</div></div>',
-    '  <div class="stat"><div class="sn">64</div><div class="sl">Endpoints</div></div>',
+    '  <div class="stat"><div class="sn">14</div><div class="sl">Providers</div></div>',
+    '  <div class="stat"><div class="sn">65</div><div class="sl">Endpoints</div></div>',
     '</div>',
     '<div class="toolbar">',
     '  <input type="text" id="srch" placeholder="&#x1F50D;  Cari endpoint, path, parameter..." oninput="doFilter()">',
@@ -241,6 +242,10 @@ function getHTML() {
     '  {id:"search",path:"/drama/search",ds:"Search",f:[{n:"q",l:"query",r:1,v:"Squid Game"},{n:"limit",l:"limit",t:"number",v:"10"}]},',
     '  {id:"info",path:"/drama/info",ds:"Info",f:[{n:"id",l:"id",r:1,v:"3135"}]},',
     '  {id:"stream",path:"/drama/stream",ds:"Stream",f:[{n:"id",l:"id",r:1,v:"36943"}]}',
+    ']},',
+    // MissAV
+    '{id:"missav",nm:"MissAV API",cl:"#f43f5e",bd:"VIDEO",ct:"mv",ep:[',
+    '  {id:"detail",path:"/missav/api/v1/detail",ds:"Get Detail",f:[{n:"url",l:"url",r:1,v:""}]}',
     ']},',
     // Tools
     '{id:"sosmed",nm:"Social Media DL",cl:"#ec4899",bd:"TOOL",ct:"tl",ep:[',
@@ -527,7 +532,14 @@ export default {
     }
 
     // Proxy ke upstream
-    const target = TARGET_BASE + path + url.search;
+    let target = TARGET_BASE + path + url.search;
+    
+    // Rute Khusus untuk MissAV (Dibelokkan ke server Render buatanmu)
+    if (path.startsWith("/missav")) {
+      const renderUrl = "https://missav-api-5ye5.onrender.com";
+      target = renderUrl + path.replace("/missav", "") + url.search;
+    }
+
     try {
       const t0 = Date.now();
       const up = await fetch(new Request(target, {
@@ -556,4 +568,3 @@ export default {
     }
   },
 };
-
