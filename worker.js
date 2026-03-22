@@ -20,7 +20,7 @@ const ALLOWED = [
   "/reelshort","/freereels","/netshort","/dramabox",
   "/drama","/sosmed","/terabox","/youtube",
   "/anime","/samehada","/shinigami","/stats",
-  "/missav","/novel",
+  "/missav","/novel","/baca",
 ];
 
 const rateMap = new Map();
@@ -147,8 +147,8 @@ function getHTML() {
     '  <div class="proxy-badge"><span class="dot"></span>Proxy via Cloudflare Workers</div>',
     '</header>',
     '<div class="sbar">',
-    '  <div class="stat"><div class="sn">15</div><div class="sl">Providers</div></div>',
-    '  <div class="stat"><div class="sn">69</div><div class="sl">Endpoints</div></div>',
+    '  <div class="stat"><div class="sn">16</div><div class="sl">Providers</div></div>',
+    '  <div class="stat"><div class="sn">72</div><div class="sl">Endpoints</div></div>',
     '</div>',
     '<div class="toolbar">',
     '  <input type="text" id="srch" placeholder="&#x1F50D;  Cari endpoint, path, parameter..." oninput="doFilter()">',
@@ -275,10 +275,15 @@ function getHTML() {
     '  {id:"chapter",path:"/shinigami/chapter",ds:"Chapters",pp:1,f:[{n:"id",l:"id (UUID)",r:1,v:"aec5b7bf-63ca-4ed7-a7da-eea78f227036"}]},',
     '  {id:"dl",path:"/shinigami/download",ds:"Download",pp:1,f:[{n:"id",l:"id (UUID)",r:1,v:"93f5cda7-344a-434b-b9d7-bc29caff34c2"}]}',
     ']},',
-    '{id:"novel",nm:"Novel Indonesia",cl:"#22c55e",bd:"NOVEL",ct:"mg",ep:[',
+    '{id:"novel",nm:"Novel Indonesia (YomiNovel)",cl:"#22c55e",bd:"NOVEL",ct:"mg",ep:[',
     '  {id:"search",path:"/novel/search",ds:"Search Novel",f:[{n:"q",l:"query",r:1,v:"devil"}]},',
     '  {id:"detail",path:"/novel/detail",ds:"Detail Novel",f:[{n:"url",l:"url",r:1,v:"https://www.yominovel.web.id/p/the-devil-princess-ln-indonesia.html"}]},',
     '  {id:"chapter",path:"/novel/chapter",ds:"Read Chapter",f:[{n:"url",l:"url",r:1,v:"https://www.yominovel.web.id/2025/08/the-devil-princess-jilid-1-bab-1.html"}]}',
+    ']},',
+    '{id:"baca",nm:"BacaLightNovel",cl:"#f59e0b",bd:"NOVEL",ct:"mg",ep:[',
+    '  {id:"search",path:"/baca/search",ds:"Search Novel",f:[{n:"q",l:"query",r:1,v:"nine star"}]},',
+    '  {id:"detail",path:"/baca/detail",ds:"Detail Novel",f:[{n:"url",l:"url",r:1,v:"https://bacalightnovel.co/series/nine-star-hegemon-body-art/"}]},',
+    '  {id:"chapter",path:"/baca/chapter",ds:"Read Chapter",f:[{n:"url",l:"url",r:1,v:"https://bacalightnovel.co/nine-star-hegemon-body-art-chapter-1/"}]}',
     ']}',
     '];',
     'var CATS=[',
@@ -286,7 +291,7 @@ function getHTML() {
     '  {id:"mv",lbl:"Movie API",ico:"&#x1F3A5;"},',
     '  {id:"tl",lbl:"Tool API",ico:"&#x1F6E0;&#xFE0F;"},',
     '  {id:"an",lbl:"Anime API",ico:"&#x1F534;"},',
-    '  {id:"mg",lbl:"Manga API",ico:"&#x1F4D6;"}',
+    '  {id:"mg",lbl:"Manga & Novel API",ico:"&#x1F4D6;"}',
     '];',
     'function getP(pid){ return PV.find(function(x){return x.id===pid;}); }',
     'function getEp(p,eid){ return p.ep.find(function(x){return x.id===eid;}); }',
@@ -422,7 +427,8 @@ function getHTML() {
     '    +\'<div class="bpath">\'+basePath+"</div>"',
     '    +"</div>"',
     '    +\'<span class="bdg" style="background:\'+p.cl+\'20;color:\'+p.cl+\';border:1px solid \'+p.cl+\'33">\'+p.bd+"</span>"',
-    '    +\'<span class="epc">\'+p.ep.length+\' endpoints</span>\'',
+    '    +\'<span class="epc">\'+p.ep.length+\' endpoints\'',
+    '    +"</span>"',
     '    +"</div>"',
     '    +\'<span class="chev" id="cv_\'+p.id+\'">&#x25BC;</span>\'',
     '    +"</div>"',
@@ -525,6 +531,11 @@ export default {
     }
 
     if (path.startsWith("/novel")) {
+      const renderUrl = "https://missav-backend.onrender.com";
+      target = renderUrl + path + url.search;
+    }
+
+    if (path.startsWith("/baca")) {
       const renderUrl = "https://missav-backend.onrender.com";
       target = renderUrl + path + url.search;
     }
