@@ -1,4 +1,4 @@
-m/**
+/**
  * ⚡ Sonzai X API — Worker + Explorer
  * Deploy: https://api-proxy-falcon.fajarlsmn2k21.workers.dev/
  * - GET /       → HTML API Explorer
@@ -167,7 +167,9 @@ function getHTML() {
     '<script>',
     'var BASE=location.origin;',
     'var xAll=false, curCat="all";',
+    // ── PROVIDERS DATA ────────────────────────────────────────────────────
     'var PV=[',
+    // Short Drama
     '{id:"melolo",nm:"Melolo Short Drama",cl:"#3b82f6",bd:"VIDEO",ct:"sd",ep:[',
     '  {id:"search",path:"/melolo/search",ds:"Search",f:[{n:"q",l:"query",r:1,v:"cinta"},{n:"result",l:"result",t:"number",v:"10"},{n:"page",l:"page",t:"number",v:"1"}]},',
     '  {id:"home",path:"/melolo/home",ds:"Homepage",f:[{n:"page",l:"page",t:"number",v:"1"}]},',
@@ -233,6 +235,7 @@ function getHTML() {
     '  {id:"detail",path:"/dramabox/detail",ds:"Detail",pp:1,f:[{n:"id",l:"id",r:1,v:"42000001340"}]},',
     '  {id:"stream",path:"/dramabox/stream",ds:"Stream",f:[{n:"dramaId",l:"dramaId",r:1,v:"42000001340"},{n:"episodeIndex",l:"episodeIndex",t:"number",r:1,v:"0"}]}',
     ']},',
+    // Movie
     '{id:"drama",nm:"Drama (Drakor)",cl:"#14b8a6",bd:"MOVIE",ct:"mv",ep:[',
     '  {id:"homekorea",path:"/drama/home/korea",ds:"Home Korea",f:[{n:"page",l:"page",t:"number",v:"1"}]},',
     '  {id:"homechina",path:"/drama/home/china",ds:"Home China",f:[{n:"page",l:"page",t:"number",v:"1"}]},',
@@ -240,11 +243,12 @@ function getHTML() {
     '  {id:"info",path:"/drama/info",ds:"Info",f:[{n:"id",l:"id",r:1,v:"3135"}]},',
     '  {id:"stream",path:"/drama/stream",ds:"Stream",f:[{n:"id",l:"id",r:1,v:"36943"}]}',
     ']},',
+    // MissAV
     '{id:"missav",nm:"MissAV API",cl:"#f43f5e",bd:"VIDEO",ct:"mv",ep:[',
-    '  {id:"health",path:"/missav/health",ds:"Health Check",f:[]},',
     '  {id:"search",path:"/missav/api/v1/search",ds:"Search Video",f:[{n:"query",l:"query",r:1,v:"korea"},{n:"page",l:"page",t:"number",v:"1"}]},',
     '  {id:"detail",path:"/missav/api/v1/detail",ds:"Get Detail",f:[{n:"url",l:"url",r:1,v:""}]}',
     ']},',
+    // Tools
     '{id:"sosmed",nm:"Social Media DL",cl:"#ec4899",bd:"TOOL",ct:"tl",ep:[',
     '  {id:"tiktok",path:"/sosmed/tiktok",ds:"TikTok",f:[{n:"url",l:"url",r:1,v:"https://vt.tiktok.com/ZSmbFjNGC/"}]},',
     '  {id:"facebook",path:"/sosmed/facebook",ds:"Facebook",f:[{n:"url",l:"url",r:1,v:"https://www.facebook.com/share/r/19f798L4GQ/"}]},',
@@ -257,6 +261,7 @@ function getHTML() {
     '  {id:"video",path:"/youtube/video",ds:"Download Video",f:[{n:"url",l:"url",r:1,v:"https://www.youtube.com/watch?v=rcAw6ZQ0jbE"}]},',
     '  {id:"music",path:"/youtube/music",ds:"Download Audio",f:[{n:"url",l:"url",r:1,v:"https://www.youtube.com/watch?v=rcAw6ZQ0jbE"}]}',
     ']},',
+    // Anime
     '{id:"anime",nm:"Anime",cl:"#ef4444",bd:"ANIME",ct:"an",ep:[',
     '  {id:"home",path:"/anime/home",ds:"Latest Update",f:[{n:"page",l:"page",t:"number",v:"1"}]},',
     '  {id:"ongoing",path:"/anime/ongoing",ds:"Ongoing",f:[]},',
@@ -270,12 +275,15 @@ function getHTML() {
     '  {id:"search",path:"/samehada",ds:"Search",f:[{n:"s",l:"search",r:1,v:"tensei"}]},',
     '  {id:"dl",path:"/samehada",ds:"Download",f:[{n:"dl",l:"url slug",r:1,v:"tensei-shitara-dragon-no-tamago-datta-episode-1"}]}',
     ']},',
+    // Manga
     '{id:"shinigami",nm:"Shinigami Manga",cl:"#6366f1",bd:"MANGA",ct:"mg",ep:[',
     '  {id:"search",path:"/shinigami/search",ds:"Search",f:[{n:"q",l:"query",r:1,v:"villain"}]},',
     '  {id:"chapter",path:"/shinigami/chapter",ds:"Chapters",pp:1,f:[{n:"id",l:"id (UUID)",r:1,v:"aec5b7bf-63ca-4ed7-a7da-eea78f227036"}]},',
     '  {id:"dl",path:"/shinigami/download",ds:"Download",pp:1,f:[{n:"id",l:"id (UUID)",r:1,v:"93f5cda7-344a-434b-b9d7-bc29caff34c2"}]}',
     ']}',
-    '];',
+    '];', // end PV
+
+    // ── HELPERS ───────────────────────────────────────────────────────────
     'var CATS=[',
     '  {id:"sd",lbl:"Short Drama API",ico:"&#x1F3AC;"},',
     '  {id:"mv",lbl:"Movie API",ico:"&#x1F3A5;"},',
@@ -283,8 +291,10 @@ function getHTML() {
     '  {id:"an",lbl:"Anime API",ico:"&#x1F534;"},',
     '  {id:"mg",lbl:"Manga API",ico:"&#x1F4D6;"}',
     '];',
+
     'function getP(pid){ return PV.find(function(x){return x.id===pid;}); }',
     'function getEp(p,eid){ return p.ep.find(function(x){return x.id===eid;}); }',
+
     'function buildUrl(pid,eid){',
     '  var p=getP(pid), ep=getEp(p,eid);',
     '  var path=ep.path, params=new URLSearchParams();',
@@ -298,6 +308,7 @@ function getHTML() {
     '  var qs=params.toString();',
     '  return BASE+path+(qs?"?"+qs:"");',
     '}',
+
     'function refreshUrl(pid,eid){',
     '  var url=buildUrl(pid,eid);',
     '  var el=document.getElementById("uprev_"+pid+"_"+eid);',
@@ -307,6 +318,7 @@ function getHTML() {
     '  var qs=qi>-1?"?"+url.slice(qi+1):"";',
     '  el.innerHTML=\'<span class="b">\'+BASE+\'</span><span class="p">\'+ps+\'</span><span class="q">\'+qs+"</span>";',
     '}',
+
     'function hlJson(j){',
     '  return j.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")',
     '   .replace(/("(\\\\u[a-zA-Z0-9]{4}|\\\\[^u]|[^\\\\"])*"(\\s*:)?|\\b(true|false|null)\\b|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?)/g,function(m){',
@@ -317,6 +329,8 @@ function getHTML() {
     '     return \'<span class="\'+c+\'">\'+m+"</span>";',
     '   });',
     '}',
+
+    // ── SEND REQUEST ──────────────────────────────────────────────────────
     'function doSend(pid,eid){',
     '  var url=buildUrl(pid,eid);',
     '  var btn=document.getElementById("sb_"+pid+"_"+eid);',
@@ -359,6 +373,8 @@ function getHTML() {
     '    btn.querySelector(".slbl").textContent="Send Request \u26A1";',
     '  });',
     '}',
+
+    // ── COPY ─────────────────────────────────────────────────────────────
     'function doCopyUrl(pid,eid){',
     '  navigator.clipboard.writeText(buildUrl(pid,eid));',
     '  var btn=document.getElementById("cu_"+pid+"_"+eid);',
@@ -371,6 +387,8 @@ function getHTML() {
     '  var btn=document.getElementById("cr_"+pid+"_"+eid);',
     '  if(btn){btn.textContent="Copied!";setTimeout(function(){btn.textContent="Copy";},1200);}',
     '}',
+
+    // ── RENDER ────────────────────────────────────────────────────────────
     'function renderField(p,ep,f){',
     '  var key=p.id+"_"+ep.id;',
     '  var inputId="f_"+p.id+"_"+ep.id+"_"+f.n;',
@@ -382,6 +400,7 @@ function getHTML() {
     '    +\'<input class="pfield" id="\'+inputId+\'" type="\'+( f.t||"text" )+\'" value="\'+( f.v||"" )+\'" oninput="\'+onip+\'"\'',
     '    +"></div></div>";',
     '}',
+
     'function renderEp(p,ep){',
     '  var k=p.id+"_"+ep.id;',
     '  var pd=ep.pp?ep.path+"/{id}":ep.path;',
@@ -408,6 +427,7 @@ function getHTML() {
     '    +"</div></div></div>";',
     '  return h;',
     '}',
+
     'function renderProv(p){',
     '  var epHTML=p.ep.map(function(ep){return renderEp(p,ep);}).join("");',
     '  var basePath=BASE+p.ep[0].path.split("/").slice(0,2).join("/")+"/...";',
@@ -425,6 +445,7 @@ function getHTML() {
     '    +\'<div class="epgrid" id="eg_\'+p.id+\'">\'+epHTML+"</div>"',
     '    +"</div>";',
     '}',
+
     'function build(){',
     '  var html="";',
     '  CATS.forEach(function(cat){',
@@ -438,6 +459,8 @@ function getHTML() {
     '  document.getElementById("app").innerHTML=html;',
     '  PV.forEach(function(p){p.ep.forEach(function(ep){refreshUrl(p.id,ep.id);});});',
     '}',
+
+    // ── TOGGLE / FILTER ───────────────────────────────────────────────────
     'function togProv(id){',
     '  document.getElementById("eg_"+id).classList.toggle("open");',
     '  document.getElementById("cv_"+id).classList.toggle("open");',
@@ -468,6 +491,7 @@ function getHTML() {
     '    sec.querySelectorAll(".pcard").forEach(function(c){c.classList.toggle("gone",c.innerText.toLowerCase().indexOf(q)===-1);});',
     '  });',
     '}',
+
     'build();',
     '</script>',
     '</body>',
@@ -497,16 +521,6 @@ export default {
       return jsonRes({ status: "ok", worker: "Api Explorer", target: TARGET_BASE, ts: new Date().toISOString() });
     }
 
-    // MISSAV health lokal
-    if (path === "/missav/health") {
-      return jsonRes({
-        status: "ok",
-        provider: "missav",
-        mode: "worker-local",
-        ts: new Date().toISOString()
-      });
-    }
-
     // Rate limit
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
     if (!checkRate(ip)) {
@@ -522,11 +536,10 @@ export default {
     let target = TARGET_BASE + path + url.search;
     
     // Rute Khusus untuk MissAV (Dibelokkan ke server Render buatanmu)
-    // KECUALI /missav/health, itu ditangani lokal
-    if (path.startsWith("/missav") && path !== "/missav/health") {
-      const renderUrl = "https://missav-api-5ye5.onrender.com";
-      target = renderUrl + path.replace("/missav", "") + url.search;
-    }
+    if (path.startsWith("/missav")) {
+  const renderUrl = "https://missav-backend.onrender.com";
+  target = renderUrl + path.replace("/missav", "") + url.search;
+}
 
     try {
       const t0 = Date.now();
