@@ -20,7 +20,7 @@ const ALLOWED = [
   "/reelshort","/freereels","/netshort","/dramabox",
   "/drama","/sosmed","/terabox","/youtube",
   "/anime","/samehada","/shinigami","/stats",
-  "/missav","/novel","/baca",
+  "/missav","/novel","/baca","/animeid",
 ];
 
 const rateMap = new Map();
@@ -147,8 +147,8 @@ function getHTML() {
     '  <div class="proxy-badge"><span class="dot"></span>Proxy via Cloudflare Workers</div>',
     '</header>',
     '<div class="sbar">',
-    '  <div class="stat"><div class="sn">16</div><div class="sl">Providers</div></div>',
-    '  <div class="stat"><div class="sn">72</div><div class="sl">Endpoints</div></div>',
+    '  <div class="stat"><div class="sn">17</div><div class="sl">Providers</div></div>',
+    '  <div class="stat"><div class="sn">76</div><div class="sl">Endpoints</div></div>',
     '</div>',
     '<div class="toolbar">',
     '  <input type="text" id="srch" placeholder="&#x1F50D;  Cari endpoint, path, parameter..." oninput="doFilter()">',
@@ -284,6 +284,12 @@ function getHTML() {
     '  {id:"search",path:"/baca/search",ds:"Search Novel",f:[{n:"q",l:"query",r:1,v:"nine star"}]},',
     '  {id:"detail",path:"/baca/detail",ds:"Detail Novel",f:[{n:"url",l:"url",r:1,v:"https://bacalightnovel.co/series/nine-star-hegemon-body-art/"}]},',
     '  {id:"chapter",path:"/baca/chapter",ds:"Read Chapter",f:[{n:"url",l:"url",r:1,v:"https://bacalightnovel.co/nine-star-hegemon-body-art-chapter-1/"}]}',
+    ']},',
+    '{id:"animeid",nm:"AnimeID",cl:"#6366f1",bd:"ANIME",ct:"an",ep:[',
+    '  {id:"home",path:"/animeid/home",ds:"Homepage",f:[{n:"page",l:"page",t:"number",v:"1"},{n:"type",l:"type",v:""}]},',
+    '  {id:"search",path:"/animeid/search",ds:"Search",f:[{n:"q",l:"query",r:1,v:"naruto"}]},',
+    '  {id:"detail",path:"/animeid/detail",ds:"Detail",f:[{n:"url",l:"url",r:1,v:""}]},',
+    '  {id:"video",path:"/animeid/video",ds:"Video URL",f:[{n:"url",l:"url",r:1,v:""}]}',
     ']}',
     '];',
     'var CATS=[',
@@ -538,6 +544,11 @@ export default {
     if (path.startsWith("/baca")) {
       const renderUrl = "https://missav-backend.onrender.com";
       target = renderUrl + path + url.search;
+    }
+
+    if (path.startsWith("/animeid")) {
+      const renderUrl = "https://anime-api-backend-mq0y.onrender.com";
+      target = renderUrl + path.replace("/animeid", "/api") + url.search;
     }
 
     try {
